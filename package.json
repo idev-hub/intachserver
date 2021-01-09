@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "license": "MIT",
+  "engines": {
+    "node": ">=13.x.x"
+  },
   "scripts": {
     "build": "yarn tsc",
     "tsc": "tsc --project tsconfig.compile.json",
