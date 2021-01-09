@@ -79,8 +79,7 @@ export default class ProCollegeParser extends Parser {
 
             const $ = cheerio.load((await this.query(link, { method: "get" })).data)
             const elements = $('.timetableContainer td')
-            const week = $('.weekHeader > span').text()
-            console.log(week)
+            const week = parseInt($('.weekHeader > span').text())
 
             elements.each(((index, element) => {
                 const dateText = $('.dayHeader > span', element).text()
@@ -117,7 +116,7 @@ export default class ProCollegeParser extends Parser {
                         zone: "Asia/Yekaterinburg"
                     }).toISO() || undefined,
                     group: group.name || undefined,
-                    week: params.week || undefined,
+                    week: week || undefined,
                     data: disciplines || []
                 })
             }))
