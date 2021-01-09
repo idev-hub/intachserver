@@ -75,7 +75,7 @@ export class WapAnosovParser extends Parser {
         return {
             date: DateTime.fromFormat(params.date, 'dd.LL.yyyy').setZone('Asia/Yekaterinburg').toISO() || undefined,
             group: params.group || undefined,
-            week: params.week || undefined,
+            week: params.week || 0,
             data: disciplines || []
         }
     }
