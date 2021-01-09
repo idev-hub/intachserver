@@ -18,32 +18,48 @@ export class CollegeController {
 
     @Get('/:id/lessons')
     async findLessons (@QueryParams("week") week: number, @QueryParams("group") group: string, @QueryParams("date") date: string, @PathParams("id") id: number): Promise<any> {
-        return this.collegeServices.findByPk(id)?.parser.lessons({
-            date: date,
-            group: group,
-            week: week || undefined
-        })
+        const parser = this.collegeServices.findParser(id)
+        if ( parser ) {
+            return parser.lessons({
+                date: date,
+                group: group,
+                week: week || undefined
+            })
+        }
+        return undefined
     }
 
     @Get('/:id/complexes')
     async findComplexes (@PathParams("id") id: number): Promise<any> {
-        return this.collegeServices.findByPk(id)?.parser.complexes({})
+        const parser = this.collegeServices.findParser(id)
+        if ( parser ) {
+            return parser.complexes({})
+        }
+        return undefined
     }
 
     @Get('/:id/groups')
     async findGroups (@QueryParams("complex") complex: number, @PathParams("id") id: number): Promise<any> {
-        return this.collegeServices.findByPk(id)?.parser.groups({
-            complex: complex
-        })
+        const parser = this.collegeServices.findParser(id)
+        if ( parser ) {
+            return parser.groups({
+                complex: complex
+            })
+        }
+        return undefined
     }
 
     @Get('/:id/lessonsWeek')
     async findLessonsWeek (@QueryParams("complex") complex: number, @QueryParams("week") week: number, @QueryParams("group") group: string, @PathParams("id") id: number): Promise<any> {
-        return this.collegeServices.findByPk(id)?.parser.lessonsWeek({
-            group: group,
-            week: week || undefined,
-            complex: complex || undefined
-        })
+        const parser = this.collegeServices.findParser(id)
+        if ( parser ) {
+            return parser.lessonsWeek({
+                group: group,
+                week: week || undefined,
+                complex: complex || undefined
+            })
+        }
+        return undefined
     }
 
     @Get()

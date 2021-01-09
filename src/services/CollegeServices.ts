@@ -3,6 +3,7 @@ import { College } from "../models/college/College";
 import { ChgpgtParser } from "../models/parser/colleges/ChgpgtParser";
 import ProCollegeParser from "../models/parser/colleges/ProCollegeParser";
 import { WapAnosovParser } from "../models/parser/colleges/WapAnosovParser";
+import { Parser } from "../models/parser/Parser";
 
 @Service()
 export class CollegeServices {
@@ -54,6 +55,12 @@ export class CollegeServices {
             return college.parser.settings
         }
 
+        return undefined
+    }
+
+    public findParser (id: number): Parser | undefined {
+        const college = this.findByPk(id)
+        if ( college ) return college.parser
         return undefined
     }
 
