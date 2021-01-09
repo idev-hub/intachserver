@@ -1,8 +1,8 @@
-import HtmlParser from "../HtmlParser";
 import cheerio from "cheerio";
 import ISubject from "../../../interfaces/ISubject";
 import ILesson from "../../../interfaces/ILesson";
 import { DateTime } from "luxon";
+import { Parser } from "../index";
 
 interface IParam {
     id: number,
@@ -10,9 +10,13 @@ interface IParam {
     link: string,
 }
 
-export default class ProCollegeParser extends HtmlParser {
+export default class ProCollegeParser extends Parser {
     constructor (api: string) {
-        super(api, { weeks: true, complexes: true })
+        super(api, {
+            weeks: true,
+            complexes: true,
+            teacherMode: false
+        })
     }
 
     public readonly lessons = async (params: { date: string, complex: number, group: string }) => {

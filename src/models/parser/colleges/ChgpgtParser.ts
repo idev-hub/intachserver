@@ -1,14 +1,20 @@
 import ILesson from "../../../interfaces/ILesson";
 import { DateTime } from "luxon";
-import { ApiParser } from "../ApiParser";
+import { Parser } from "../index";
+import { IQueryParamsMethodCollege } from "../../../interfaces/IQueryParamsMethodCollege";
+import axios from "axios";
 
-export class ChgpgtParser extends ApiParser {
+export class ChgpgtParser extends Parser {
 
     constructor () {
-        super('https://api.chgpgt.ru/api/', { weeks: true, teacherMode: true })
+        super('https://api.chgpgt.ru/api/', {
+            weeks: true,
+            teacherMode: true,
+            complexes: false
+        })
     }
 
-    public readonly groups = async (): Promise<object[]> => {
+    public readonly groups = async (): Promise<object[] | undefined> => {
         return [
             { name: '01', },
             { name: '02', },
@@ -50,14 +56,14 @@ export class ChgpgtParser extends ApiParser {
 
         return array
     }
-    public readonly lessons = async (params: { date: string, group: string, week?: number }): Promise<ILesson> => {
+    public readonly lessons = async (params: IQueryParamsMethodCollege): Promise<ILesson> => {
         try {
             const date = params.date,
                 group = params.group
 
             const timetable = (await this.query(`getRaspisanGroups/${ date }/${ group }`, {
                 method: 'post'
-            })).data.map((lesson: { [x: string]: any; }) => {
+            })).data.map((lesson: { [x: string]: string; }) => {
                 return {
                     number: parseInt(lesson["Para"]) || undefined,
                     discipline: lesson["discip"] || undefined,
@@ -67,7 +73,7 @@ export class ChgpgtParser extends ApiParser {
             })
 
             return {
-                date: DateTime.fromFormat(date, 'dd.LL.yyyy').setZone('Asia/Yekaterinburg').toISO() || undefined,
+                date: DateTime.fromFormat(<string>params.date, 'dd.LL.yyyy').setZone('Asia/Yekaterinburg').toISO() || undefined,
                 group: group || undefined,
                 week: params.week || undefined,
                 data: timetable || [],

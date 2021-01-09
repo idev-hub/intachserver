@@ -1,11 +1,15 @@
-import HtmlParser from "../HtmlParser";
 import ILesson from "../../../interfaces/ILesson";
 import { DateTime } from "luxon";
 import cheerio from "cheerio";
+import { Parser } from "../index";
 
-export class WapAnosovParser extends HtmlParser {
+export class WapAnosovParser extends Parser {
     constructor (api: string) {
-        super(api, { weeks: true, teacherMode: true })
+        super(api, {
+            weeks: true,
+            teacherMode: true,
+            complexes: false
+        })
     }
 
     public readonly groups = async (): Promise<object[]> => {

@@ -1,5 +1,5 @@
-import {Configuration, Inject} from "@tsed/di";
-import {PlatformApplication} from "@tsed/common";
+import { Configuration, Inject } from "@tsed/di";
+import { PlatformApplication } from "@tsed/common";
 import "@tsed/platform-express"; // /!\ keep this import
 import bodyParser from "body-parser";
 import compress from "compression";
@@ -11,38 +11,39 @@ import "@tsed/ajv";
 export const rootDir = __dirname;
 
 @Configuration({
-  rootDir,
-  acceptMimes: ["application/json"],
-  httpPort: process.env.PORT || 3000,
-  httpsPort: false, // CHANGE
-  mount: {
-      "/rest": [
-      `${rootDir}/controllers/**/*.ts`,
+    rootDir,
+    acceptMimes: [ "application/json" ],
+    httpPort: process.env.PORT || 3000,
+    httpsPort: false, // CHANGE
+    mount: {
+        "/rest": [
+            `${ rootDir }/controllers/**/*.ts`,
+        ]
+    },
+    componentsScan: [
+        `${ rootDir }/services/**/**.ts`,
+        `${ rootDir }/middlewares/**/**.ts`
+    ],
+    exclude: [
+        "**/*.spec.ts"
     ]
-  },
-  componentsScan: [
-    `${rootDir}/services/**/**.ts`
-  ],
-  exclude: [
-    "**/*.spec.ts"
-  ]
 })
 export class Server {
-  @Inject()
-  app: PlatformApplication;
+    @Inject()
+    app: PlatformApplication
 
-  @Configuration()
-  settings: Configuration;
+    @Configuration()
+    settings: Configuration
 
-  $beforeRoutesInit(): void {
-    this.app
-      .use(cors())
-      .use(cookieParser())
-      .use(compress({}))
-      .use(methodOverride())
-      .use(bodyParser.json())
-      .use(bodyParser.urlencoded({
-        extended: true
-      }));
-  }
+    $beforeRoutesInit (): void {
+        this.app
+        .use(cors())
+        .use(cookieParser())
+        .use(compress({}))
+        .use(methodOverride())
+        .use(bodyParser.json())
+        .use(bodyParser.urlencoded({
+            extended: true
+        }))
+    }
 }
