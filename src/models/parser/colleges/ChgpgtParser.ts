@@ -75,7 +75,7 @@ export class ChgpgtParser extends Parser {
             return {
                 date: DateTime.fromFormat(<string>params.date, 'dd.LL.yyyy').setZone('Asia/Yekaterinburg').toISO() || undefined,
                 group: group || undefined,
-                week: params.week || undefined,
+                week: params.week || 0,
                 data: timetable || [],
             }
         } catch ( e ) {

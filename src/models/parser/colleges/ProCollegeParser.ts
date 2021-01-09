@@ -3,6 +3,7 @@ import ISubject from "../../../interfaces/ISubject";
 import ILesson from "../../../interfaces/ILesson";
 import { DateTime } from "luxon";
 import { Parser } from "../index";
+import { IQueryParamsMethodCollege } from "../../../interfaces/IQueryParamsMethodCollege";
 
 interface IParam {
     id: number,
@@ -47,13 +48,14 @@ export default class ProCollegeParser extends Parser {
         return _complexes
     }
 
-    public readonly groups = async (params: { complex: number }): Promise<IParam[]> => {
+    public readonly groups = async (params: IQueryParamsMethodCollege): Promise<IParam[]> => {
         const _groups: IParam[] = []
 
-        const complex = (await this.complexes()).find(c => (c.id === params.complex))
+        const complex = (await this.complexes()).find(c => (c.id) === parseInt(<string><unknown>params.complex))
         if ( complex ) {
             const $ = cheerio.load((await this.query(String(complex.link), { method: "get" })).data)
             const elements = $('.spec-year-block-container span.group-block')
+
             elements.each((index, element) => {
                 const a = $('a', element)
                 _groups.push({
@@ -77,6 +79,8 @@ export default class ProCollegeParser extends Parser {
 
             const $ = cheerio.load((await this.query(link, { method: "get" })).data)
             const elements = $('.timetableContainer td')
+            const week = $('.weekHeader > span').text()
+            console.log(week)
 
             elements.each(((index, element) => {
                 const dateText = $('.dayHeader > span', element).text()
