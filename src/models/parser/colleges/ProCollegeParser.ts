@@ -44,73 +44,76 @@ export default class ProCollegeParser extends HtmlParser {
     }
 
     public readonly groups = async (params: { complex: number }): Promise<IParam[]> => {
-        const complex = (await this.complexes()).find(c => (c.id === params.complex))
-        const $ = cheerio.load((await this.query(String(complex?.link), { method: "get" })).data)
-
         const _groups: IParam[] = []
-        const elements = $('.spec-year-block-container span.group-block')
 
-        elements.each((index, element) => {
-            const a = $('a', element)
-            _groups.push({
-                id: parseInt(element.attribs.group_id),
-                name: a.text(),
-                link: String(a.attr('href'))
+        const complex = (await this.complexes()).find(c => (c.id === params.complex))
+        if ( complex ) {
+            const $ = cheerio.load((await this.query(String(complex.link), { method: "get" })).data)
+            const elements = $('.spec-year-block-container span.group-block')
+            elements.each((index, element) => {
+                const a = $('a', element)
+                _groups.push({
+                    id: parseInt(element.attribs.group_id),
+                    name: a.text(),
+                    link: String(a.attr('href'))
+                })
             })
-        })
+        }
 
         return _groups
     }
 
     public readonly lessonsWeek = async (params: { complex: number, group: string, week?: number }): Promise<ILesson[]> => {
-        const group = (await this.groups({ complex: params.complex })).find(g => (g.id === parseInt(params.group)))
-
-        let link = String(group?.link)
-        if ( params.week ) link += "&week=" + params.week
-
-        const $ = cheerio.load((await this.query(link, { method: "get" })).data)
-
         const lessons: ILesson[] = []
-        const elements = $('.timetableContainer td')
-        elements.each(((index, element) => {
-            const dateText = $('.dayHeader > span', element).text()
-            const lessonBlocks = $('.lessonBlock', element)
 
-            const disciplines: ISubject[] = []
+        const group = (await this.groups({ complex: params.complex })).find(g => (g.id === parseInt(params.group)))
+        if ( group ) {
+            let link = String(group.link)
+            if ( params.week ) link += "&week=" + params.week
+
+            const $ = cheerio.load((await this.query(link, { method: "get" })).data)
+            const elements = $('.timetableContainer td')
+
+            elements.each(((index, element) => {
+                const dateText = $('.dayHeader > span', element).text()
+                const lessonBlocks = $('.lessonBlock', element)
+
+                const disciplines: ISubject[] = []
 
 
-            lessonBlocks.each((indexLesson, lesson) => {
-                const discipline = $('.discBlock .discHeader > span', lesson).text()
-                const teacher = $('.discBlock .discSubgroupTeacher > span', lesson).text()
-                const cabinet = $('.discBlock .discSubgroupClassroom > span', lesson).text()
+                lessonBlocks.each((indexLesson, lesson) => {
+                    const discipline = $('.discBlock .discHeader > span', lesson).text()
+                    const teacher = $('.discBlock .discSubgroupTeacher > span', lesson).text()
+                    const cabinet = $('.discBlock .discSubgroupClassroom > span', lesson).text()
 
-                const times = $('.lessonTimeBlock > div', lesson)
-                const number = $(times[0]).text()
-                const start = $(times[1]).text()
-                const end = $(times[2]).text()
+                    const times = $('.lessonTimeBlock > div', lesson)
+                    const number = $(times[0]).text()
+                    const start = $(times[1]).text()
+                    const end = $(times[2]).text()
 
-                disciplines.push({
-                    number: parseInt(number),
-                    discipline: discipline || undefined,
-                    teacher: teacher || undefined,
-                    cabinet: cabinet || undefined,
-                    time: {
-                        start: start || undefined,
-                        end: end || undefined
-                    }
+                    disciplines.push({
+                        number: parseInt(number),
+                        discipline: discipline || undefined,
+                        teacher: teacher || undefined,
+                        cabinet: cabinet || undefined,
+                        time: {
+                            start: start || undefined,
+                            end: end || undefined
+                        }
+                    })
                 })
-            })
 
-            lessons.push({
-                date: DateTime.fromFormat(dateText.toLowerCase().split(',')[0], 'd MMMM', {
-                    locale: "ru-RU",
-                    zone: "Asia/Yekaterinburg"
-                }).toISO() || undefined,
-                group: group?.name || undefined,
-                week: params?.week || undefined,
-                data: disciplines || []
-            })
-        }))
+                lessons.push({
+                    date: DateTime.fromFormat(dateText.toLowerCase().split(',')[0], 'd MMMM', {
+                        locale: "ru-RU",
+                        zone: "Asia/Yekaterinburg"
+                    }).toISO() || undefined,
+                    group: group.name || undefined,
+                    week: params.week || undefined,
+                    data: disciplines || []
+                })
+            }))
+        }
 
         return lessons
     }
