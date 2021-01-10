@@ -2,6 +2,8 @@ import ILesson from "../../../interfaces/ILesson";
 import { DateTime } from "luxon";
 import cheerio from "cheerio";
 import { Parser } from "../index";
+import { encodeURIWin1251 } from "../../../utils/encodeURIWin1251";
+import axios from "axios";
 
 export class WapAnosovParser extends Parser {
     constructor (api: string) {
@@ -51,9 +53,14 @@ export class WapAnosovParser extends Parser {
 
         return array
     }
+
+    // TODO Ошибка с кодировкой группы
+    // %C8%D1-41 на сайте это
+    // %D0%98%D0%A1-41 получается это
+    // ИС-41 что на самом деле
     public readonly lessons = async (params: { date: string, group: string, week?: number }): Promise<ILesson> => {
         const _date = DateTime.fromFormat(params.date, 'dd.LL.yyyy').setZone('Asia/Yekaterinburg').toFormat('yyyy-LL-dd')
-        const $ = cheerio.load((await this.query(`rasp.php?d=${ _date }&g=${ params.group }`)).data)
+        const $ = cheerio.load((await axios.get(`${this.api}rasp.php?d=${ _date }&g=${ encodeURIWin1251(params.group) }`)).data)
 
         const elements = $($('p')[0]).text().split('\n').filter(el => (el !== ""))
         const disciplines = []
