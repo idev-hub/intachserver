@@ -10,23 +10,13 @@ export class WapAnosovParser extends Parser {
         super(api, {
             weeks: true,
             teacherMode: true,
-            complexes: false
+            complexes: false,
+            groups: false
         })
     }
 
-    public readonly groups = async (): Promise<object[]> => {
-        return [
-            { name: 'AM-11', },
-            { name: 'AT-41', },
-            { name: 'ИС-41', },
-            { name: 'ОД-31', },
-            { name: 'TM-41', },
-            { name: 'TM-42', },
-            { name: 'Э-11', },
-            { name: 'Э-41', },
-            { name: 'Ю-31', },
-            { name: 'Ю-32', },
-        ]
+    public readonly groups = async (): Promise<object[] | undefined> => {
+        return undefined
     }
 
     public readonly lessonsWeek = async (params: { group: string, week?: number }): Promise<ILesson[]> => {
@@ -56,7 +46,7 @@ export class WapAnosovParser extends Parser {
 
     public readonly lessons = async (params: { date: string, group: string, week?: number }): Promise<ILesson> => {
         const _date = DateTime.fromFormat(params.date, 'dd.LL.yyyy').setZone('Asia/Yekaterinburg').toFormat('yyyy-LL-dd')
-        const $ = cheerio.load((await axios.get(`${this.api}rasp.php?d=${ _date }&g=${ encodeURIWin1251(params.group) }`)).data)
+        const $ = cheerio.load((await axios.get(`${ this.api }rasp.php?d=${ _date }&g=${ encodeURIWin1251(params.group) }`)).data)
 
         const elements = $($('p')[0]).text().split('\n').filter(el => (el !== ""))
         const disciplines = []

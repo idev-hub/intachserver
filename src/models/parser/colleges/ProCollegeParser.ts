@@ -16,7 +16,8 @@ export default class ProCollegeParser extends Parser {
         super(api, {
             weeks: true,
             complexes: true,
-            teacherMode: false
+            teacherMode: false,
+            groups: true
         })
     }
 

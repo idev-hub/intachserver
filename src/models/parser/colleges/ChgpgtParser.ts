@@ -2,7 +2,6 @@ import ILesson from "../../../interfaces/ILesson";
 import { DateTime } from "luxon";
 import { Parser } from "../index";
 import { IQueryParamsMethodCollege } from "../../../interfaces/IQueryParamsMethodCollege";
-import axios from "axios";
 
 export class ChgpgtParser extends Parser {
 
@@ -10,26 +9,13 @@ export class ChgpgtParser extends Parser {
         super('https://api.chgpgt.ru/api/', {
             weeks: true,
             teacherMode: true,
-            complexes: false
+            complexes: false,
+            groups: false
         })
     }
 
     public readonly groups = async (): Promise<object[] | undefined> => {
-        return [
-            { name: '01', },
-            { name: '02', },
-            { name: '03', },
-            { name: '04', },
-            { name: '05', },
-            { name: '06', },
-            { name: '07', },
-            { name: '107', },
-            { name: '207', },
-            { name: '307', },
-            { name: '407', },
-            { name: '108-ТПИ', },
-            { name: '106-ОМД', },
-        ]
+        return undefined
     }
 
     public readonly lessonsWeek = async (params: { group: string, week?: number }): Promise<ILesson[]> => {

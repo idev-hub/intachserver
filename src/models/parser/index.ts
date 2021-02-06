@@ -4,7 +4,8 @@ import { IQueryParamsMethodCollege } from "../../interfaces/IQueryParamsMethodCo
 export interface ISettingsParser {
     weeks: boolean, // Есть ли режим понедельной навигации
     complexes: boolean, // Есть ли режим комлексов
-    teacherMode: boolean // Есть ли режим учителей
+    teacherMode: boolean, // Есть ли режим учителей
+    groups: boolean
 }
 
 export enum EMethods {
@@ -20,7 +21,8 @@ export class Parser {
     public settings: ISettingsParser = {
         weeks: false,
         complexes: false,
-        teacherMode: false
+        teacherMode: false,
+        groups: false
     }
 
     constructor (api: string, settings: ISettingsParser) {
